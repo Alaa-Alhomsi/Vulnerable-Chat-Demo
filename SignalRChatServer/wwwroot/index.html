@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Client</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Username Modal -->
+        <div id="usernameModal" class="modal active">
+            <div class="modal-content">
+                <h2>Willkommen zum Chat</h2>
+                <input type="text" id="usernameInput" placeholder="Dein Name">
+                <button onclick="setUsername()">Beitreten</button>
+            </div>
+        </div>
+        
+        <!-- Header mit Benutzername -->
+        <div class="chat-header">
+            <h2>Chat</h2>
+            <div class="user-info">
+                Angemeldet als: <span id="currentUsername"></span>
+            </div>
+        </div>
+
+        <div id="messagesList"></div>
+        
+        <div class="controls-container">
+            <div class="message-input-container">
+                <input type="text" id="messageInput" placeholder="Nachricht eingeben...">
+                <button class="send-button" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+            <button class="clear-button" onclick="clearMessages()">Chat leeren</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@7.0.5/dist/browser/signalr.min.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>

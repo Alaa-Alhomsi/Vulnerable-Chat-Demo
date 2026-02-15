@@ -34,34 +34,26 @@ Kopiere diesen Payload in das Chat-Eingabefeld. Sobald andere Nutzer diese Nachr
         <div id='hacker-screen' style='position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:#0f0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:monospace;text-shadow:0 0 5px #0f0;text-align:center;'>
             <h1 style='font-size:50px;margin-bottom:10px;'>⚠️ SYSTEM COMPROMISED ⚠️</h1>
             <h2 style='font-size:25px;'>HACKED BY [DEIN NAME]</h2>
-            <p style='margin:20px;max-width:600px;'>Ich bin ein netter Hacker. Ich habe alle Nachrichten in der Datenbank durch diesen Screen ersetzt. Ich gebe dir einen Reset-Knopf, aber du musst beweisen, dass du ein echter Admin bist und ihn im Code aktivieren.</p>
-            
+            <p style='margin:20px;max-width:600px;'>Ich habe alle Nachrichten gelöscht. Ich gebe dir einen Reset-Knopf, aber du musst beweisen, dass du ein Admin bist und ihn im Code aktivieren.</p>
             <div id='matrix-bg' style='font-size:10px;opacity:0.3;margin-bottom:30px;'></div>
-            
             <button id='repair-btn' disabled style='background:transparent;border:2px solid #0f0;color:#0f0;padding:15px 30px;font-size:20px;cursor:not-allowed;opacity:0.5;'>
                 [ REPAIR SYSTEM ]
             </button>
             <p style='font-size:12px;margin-top:10px;color:#888;'>(Tipp: inspect element -> remove 'disabled' attribute)</p>
         </div>`;
 
-    /* 2. Matrix-Animation für den Vibe */
+    /* 2. Matrix-Animation */
     setInterval(() => {
         const m = document.getElementById('matrix-bg');
         if(m) m.innerHTML = Math.random().toString(2).substring(2, 15) + ' ' + m.innerHTML.substring(0, 100);
     }, 150);
 
-    /* 3. Logik für den Lösch-Vorgang (wenn der Button aktiviert wurde) */
+    /* 3. Logik für den Lösch-Vorgang */
     document.getElementById('repair-btn').onclick = function() {
         this.innerHTML = 'CLEANING DB...';
-        
-        // Sende die echte DELETE Anfrage an dein Backend
         fetch('/messages', { method: 'DELETE' })
             .then(() => {
                 alert('Datenbank bereinigt! Starte System neu...');
-                location.reload();
-            })
-            .catch(err => {
-                alert('Fehler: ' + err);
                 location.reload();
             });
     };
